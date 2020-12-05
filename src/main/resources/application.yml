@@ -1,0 +1,5 @@
+spring:
+  datasource:
+    password: Memeow1234
+    url: jdbc:mysql://memeow-server.mysql.database.azure.com:3306/memeow_db?useSSL=true&requireSSL=false&serverTimezone=UTC
+    username: chido@memeow-server
