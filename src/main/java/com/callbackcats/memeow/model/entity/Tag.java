@@ -19,7 +19,7 @@ public class Tag {
             joinColumns = @JoinColumn(name="tag_id"),
             inverseJoinColumns = @JoinColumn(name="template_id")
     )
-    Set<Template> templatesWithTag;
+    Set<Template> templatesByTemplateId;
     @Id
     @Column(name = "tag_id")
     private Integer tagId;

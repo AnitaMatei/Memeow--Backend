@@ -7,12 +7,20 @@ import lombok.Setter;
 import javax.persistence.*;
 import java.sql.Timestamp;
 import java.util.Objects;
+import java.util.Set;
 
 @Entity
 @Setter
 @Getter
 @EqualsAndHashCode
 public class Meme {
+    @ManyToMany
+    @JoinTable(
+            name = "meme_temp",
+            joinColumns = @JoinColumn(name = "meme_id"),
+            inverseJoinColumns = @JoinColumn(name = "template_id")
+    )
+    Set<Template> templatesByTemplateId;
     @Id
     @Column(name = "meme_id")
     private Integer memeId;

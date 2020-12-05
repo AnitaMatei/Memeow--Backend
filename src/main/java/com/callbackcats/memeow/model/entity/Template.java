@@ -19,7 +19,14 @@ public class Template {
             joinColumns = @JoinColumn(name = "template_id"),
             inverseJoinColumns = @JoinColumn(name = "tag_id")
     )
-    Set<Tag> templateTags;
+    Set<Tag> tagsByTagId;
+    @ManyToMany
+    @JoinTable(
+            name = "meme_temp",
+            joinColumns = @JoinColumn(name = "template_id"),
+            inverseJoinColumns = @JoinColumn(name = "meme_id")
+    )
+    Set<Meme> memesByMemeId;
     @Id
     @Column(name = "template_id")
     private Integer templateId;
