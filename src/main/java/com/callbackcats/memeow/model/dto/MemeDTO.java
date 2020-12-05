@@ -2,6 +2,7 @@ package com.callbackcats.memeow.model.dto;
 
 import com.callbackcats.memeow.model.entity.Template;
 import com.callbackcats.memeow.model.entity.User;
+import com.google.gson.Gson;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
@@ -20,4 +21,9 @@ public class MemeDTO {
     private Integer reactionCount;
     private Timestamp dateTimeUtc;
     private User userByUserId;
+
+    @Override
+    public String toString() {
+        return new Gson().toJson(this);
+    }
 }

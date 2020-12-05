@@ -3,6 +3,7 @@ package com.callbackcats.memeow.model.dto;
 import com.callbackcats.memeow.model.entity.Image;
 import com.callbackcats.memeow.model.entity.Meme;
 import com.callbackcats.memeow.model.entity.Tag;
+import com.google.gson.Gson;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
@@ -17,4 +18,9 @@ public class TemplateDTO {
     Set<Meme> memesByMemeId;
     private String templateName;
     private Image imageByImageId;
+
+    @Override
+    public String toString() {
+        return new Gson().toJson(this);
+    }
 }

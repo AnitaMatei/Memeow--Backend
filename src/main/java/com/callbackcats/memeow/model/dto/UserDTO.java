@@ -1,6 +1,7 @@
 package com.callbackcats.memeow.model.dto;
 
 import com.callbackcats.memeow.model.entity.Meme;
+import com.google.gson.Gson;
 import lombok.AccessLevel;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -14,7 +15,6 @@ import java.util.Collection;
 @EqualsAndHashCode
 public class UserDTO {
     private String username;
-    private String password;
     private String email;
     private String firstName;
     private String lastName;
@@ -24,4 +24,9 @@ public class UserDTO {
     private String iconUrl;
     private Long xp;
     private Collection<Meme> memesByUserId;
+
+    @Override
+    public String toString() {
+        return new Gson().toJson(this);
+    }
 }
