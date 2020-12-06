@@ -23,6 +23,7 @@ public class Meme {
     Set<Template> templatesByTemplateId;
     @Id
     @Column(name = "meme_id")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer memeId;
     @Basic
     @Column(name = "meme_url")

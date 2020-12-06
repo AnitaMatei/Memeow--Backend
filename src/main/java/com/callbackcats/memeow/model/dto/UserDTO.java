@@ -7,6 +7,8 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 
+import javax.persistence.Basic;
+import javax.persistence.Column;
 import java.sql.Timestamp;
 import java.util.Collection;
 
@@ -19,9 +21,14 @@ public class UserDTO {
     private String firstName;
     private String lastName;
     private Integer age;
-    private String registrationPlatform;
-    private Timestamp registrationDateUtc;
     private String iconUrl;
+    private Byte hasFacebook;
+    private Timestamp facebookRegistrationDateUtc;
+    private Byte hasTwitter;
+    private Timestamp twitterRegistrationDateUtc;
+    private Byte hasInstagram;
+    private Timestamp instagramRegistrationDateUtc;
+    private String userRole;
     private Long xp;
     private Collection<Meme> memesByUserId;
 
