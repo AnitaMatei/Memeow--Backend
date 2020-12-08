@@ -4,7 +4,6 @@ import com.callbackcats.memeow.model.CustomUserPrincipal;
 import com.callbackcats.memeow.model.dto.UserDTO;
 import com.callbackcats.memeow.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Configurable;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -17,48 +16,42 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.Optional;
 
-@Component
-@Configurable
 public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
-    @Autowired
     JwtTokenGenerator jwtTokenGenerator;
-    @Autowired
     UserService userService;
 
-    public JwtAuthorizationFilter(AuthenticationManager authenticationManager) {
+    public JwtAuthorizationFilter(AuthenticationManager authenticationManager, UserService userService, JwtTokenGenerator jwtTokenGenerator) {
         super(authenticationManager);
-        jwtTokenGenerator = new JwtTokenGenerator();
+        this.userService = userService;
+        this.jwtTokenGenerator = jwtTokenGenerator;
     }
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain) throws IOException, ServletException {
         String jwtToken = request.getHeader(JwtConstants.HEADER_STRING);
 
-        if(jwtToken!=null && jwtToken.startsWith(JwtConstants.TOKEN_PREFIX)){
+        if (jwtToken != null && jwtToken.startsWith(JwtConstants.TOKEN_PREFIX)) {
             Authentication authentication = verifyJwtToken(jwtToken);
             SecurityContextHolder.getContext().setAuthentication(authentication);
         }
 
-        chain.doFilter(request,response);
+        chain.doFilter(request, response);
     }
 
-    private Authentication verifyJwtToken(String jwtToken){
-        System.out.println(jwtToken);
+    private Authentication verifyJwtToken(String jwtToken) {
         String email = jwtTokenGenerator.getUsername(jwtToken);
 
-        if(email == null){
+        if (email == null) {
             return null;
         }
 
         UserDTO userDTO = userService.findByEmail(email);
-        if(userDTO == null){
+        if (userDTO == null) {
             return null;
         }
 
         CustomUserPrincipal customUserPrincipal = new CustomUserPrincipal(userDTO);
-        return new UsernamePasswordAuthenticationToken(customUserPrincipal,null,customUserPrincipal.getAuthorities());
+        return new UsernamePasswordAuthenticationToken(customUserPrincipal, null, customUserPrincipal.getAuthorities());
     }
-
 }

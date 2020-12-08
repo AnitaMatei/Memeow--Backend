@@ -14,7 +14,7 @@ import java.util.Set;
 @Getter
 @EqualsAndHashCode
 public class MemeDTO {
-    Set<Template> templatesByTemplateId;
+    Set<TemplateDTO> templatesByTemplateId;
     private String memeUrl;
     private String storageLocation;
     private String memeTitle;

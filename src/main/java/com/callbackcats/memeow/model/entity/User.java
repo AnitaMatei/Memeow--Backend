@@ -10,7 +10,6 @@ import java.util.Objects;
 @Entity
 @Setter
 @Getter
-@EqualsAndHashCode
 @NoArgsConstructor
 @RequiredArgsConstructor
 public class User {
@@ -65,6 +64,10 @@ public class User {
     @Basic
     @Column(name = "xp")
     private Long xp;
+    @Basic
+    @Column(name = "profile_uuid")
+    @NonNull
+    private String profileUuid;
     @Basic
     @Column
     private String userRole;
