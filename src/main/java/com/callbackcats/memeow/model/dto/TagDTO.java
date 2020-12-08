@@ -12,7 +12,7 @@ import java.util.Set;
 @Getter
 @EqualsAndHashCode
 public class TagDTO {
-    Set<Template> templatesByTemplateId;
+    Set<TemplateDTO> templatesByTemplateId;
     private String tagName;
 
     @Override

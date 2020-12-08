@@ -30,10 +30,11 @@ public class UserDTO {
     private Timestamp instagramRegistrationDateUtc;
     private String userRole;
     private Long xp;
-    private Collection<Meme> memesByUserId;
+    private Collection<MemeDTO> memesByUserId;
 
     @Override
     public String toString() {
         return new Gson().toJson(this);
     }
 }
+

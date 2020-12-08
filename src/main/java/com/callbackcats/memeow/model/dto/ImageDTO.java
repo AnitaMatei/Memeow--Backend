@@ -15,7 +15,7 @@ import java.util.Collection;
 @EqualsAndHashCode
 public class ImageDTO {
     private String imageUrl;
-    private Collection<Template> templatesByImageId;
+    private Collection<TemplateDTO> templatesByImageId;
 
     @Override
     public String toString() {

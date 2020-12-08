@@ -19,8 +19,6 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.Optional;
 
-@Component
-@Configurable
 public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
     @Autowired
     JwtTokenGenerator jwtTokenGenerator;

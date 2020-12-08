@@ -14,8 +14,8 @@ import java.util.Set;
 @Getter
 @EqualsAndHashCode
 public class TemplateDTO {
-    Set<Tag> tagsByTagId;
-    Set<Meme> memesByMemeId;
+    Set<TagDTO> tagsByTagId;
+    Set<MemeDTO> memesByMemeId;
     private String templateName;
     private Image imageByImageId;
 
