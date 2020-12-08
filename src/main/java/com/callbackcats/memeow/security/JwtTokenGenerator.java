@@ -4,11 +4,13 @@ import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.callbackcats.memeow.model.CustomUserPrincipal;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
 import java.sql.Date;
 
 @Component
+@Slf4j
 public class JwtTokenGenerator {
 
     public String generateTokenWithPrefix(CustomUserPrincipal customUserPrincipal) {
@@ -35,7 +37,7 @@ public class JwtTokenGenerator {
             JWT.require(Algorithm.HMAC512(JwtConstants.SECRET.getBytes())).build().verify(token);
             return true;
         } catch (JWTVerificationException ex) {
-            System.out.println(ex.getMessage());
+            log.error(ex.getMessage());
         }
 
         return false;

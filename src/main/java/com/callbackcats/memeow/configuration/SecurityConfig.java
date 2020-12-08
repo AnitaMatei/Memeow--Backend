@@ -1,20 +1,29 @@
 package com.callbackcats.memeow.configuration;
 
 import com.callbackcats.memeow.security.JwtAuthorizationFilter;
-import org.springframework.beans.factory.annotation.Configurable;
+import com.callbackcats.memeow.security.JwtTokenGenerator;
+import com.callbackcats.memeow.service.UserService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.BeanIds;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.config.annotation.web.configuration.WebSecurityConfiguration;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.core.context.SecurityContextHolder;
 
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
+    UserService userService;
+    JwtTokenGenerator jwtTokenGenerator;
+
+    public SecurityConfig(UserService userService, JwtTokenGenerator jwtTokenGenerator){
+        this.userService = userService;
+        this.jwtTokenGenerator = jwtTokenGenerator;
+    }
 
 
     @Override
@@ -30,18 +39,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/api/profile").hasRole("USER")
                 .anyRequest().authenticated()
                 .and()
-                .addFilter(jwtAuthorizationFilter(authenticationManagerBean()));
+                .addFilter(new JwtAuthorizationFilter(authenticationManager(),userService,jwtTokenGenerator));
     }
 
-    @Bean(name = BeanIds.AUTHENTICATION_MANAGER)
-    @Override
-    public AuthenticationManager authenticationManagerBean() throws Exception {
-        return super.authenticationManagerBean();
-    }
-
-    @Bean
-    public JwtAuthorizationFilter jwtAuthorizationFilter(AuthenticationManager authenticationManager) {
-        return new JwtAuthorizationFilter(authenticationManager);
-    }
 
 }

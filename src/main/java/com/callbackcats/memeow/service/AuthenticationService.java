@@ -9,6 +9,7 @@ import com.callbackcats.memeow.model.entity.User;
 import com.callbackcats.memeow.repository.UserRepository;
 import com.callbackcats.memeow.security.JwtConstants;
 import com.callbackcats.memeow.security.JwtTokenGenerator;
+import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -22,24 +23,27 @@ import java.util.Date;
 import java.util.Optional;
 
 @Service
+@Slf4j
 public class AuthenticationService {
-    @Autowired
     UserRepository userRepository;
-    @Autowired
     ModelMapper modelMapper;
-    @Autowired
     JwtTokenGenerator jwtTokenGenerator;
+
+    public AuthenticationService(UserRepository userRepository, ModelMapper modelMapper, JwtTokenGenerator jwtTokenGenerator) {
+        this.userRepository = userRepository;
+        this.modelMapper = modelMapper;
+        this.jwtTokenGenerator = jwtTokenGenerator;
+    }
 
     public ResponseEntity<?> facebook(FacebookAuthResponse facebookAuthResponse) {
         FacebookUser facebookUser;
         try {
             facebookUser = verifyTokenValidity(facebookAuthResponse);
         } catch (ResponseStatusException ex) {
-            System.out.println(ex.getMessage());
+            log.error(ex.getMessage());
             return ResponseEntity.badRequest().body(ex.getMessage());
         }
 
-        System.out.println(facebookUser.getEmail());
         Optional<User> userOptional = userRepository.findByEmail(facebookUser.getEmail());
 
         String jwtToken;
@@ -47,9 +51,10 @@ public class AuthenticationService {
             try {
                 jwtToken = facebookLoginUser(userOptional.get());
             } catch (ResponseStatusException ex) {
+                log.error(ex.getMessage());
                 return ResponseEntity.badRequest().body(ex.getMessage());
             }
-        }else{
+        } else {
             jwtToken = facebookRegisterUser(facebookUser);
         }
         return ResponseEntity.ok(new LoginResponse(jwtToken));
@@ -57,13 +62,12 @@ public class AuthenticationService {
 
     private FacebookUser verifyTokenValidity(FacebookAuthResponse facebookAuthResponse) {
         String fbUrl = JwtConstants.FACEBOOK_AUTH_URL + facebookAuthResponse.getAccessToken();
-        System.out.println(fbUrl);
         FacebookUser facebookUser = WebClient.create().get().uri(fbUrl).retrieve().
                 onStatus(HttpStatus::isError, clientResponse -> {
                     throw new ResponseStatusException(clientResponse.statusCode(), "Invalid token");
                 })
                 .bodyToMono(FacebookUser.class).block();
-        System.out.println(facebookUser);
+        log.info(facebookUser.toString());
         return facebookUser;
     }
 
@@ -73,23 +77,21 @@ public class AuthenticationService {
         }
 
         CustomUserPrincipal customUserPrincipal = new CustomUserPrincipal(modelMapper.map(user, UserDTO.class));
-        String jwtToken = jwtTokenGenerator.generateTokenWithPrefix(customUserPrincipal);
 
-        return jwtToken;
+        return jwtTokenGenerator.generateTokenWithPrefix(customUserPrincipal);
     }
 
-    private String facebookRegisterUser(FacebookUser facebookUser){
-        User newUser = new User(facebookUser.getEmail(),facebookUser.getFirst_name(),facebookUser.getLast_name());
+    private String facebookRegisterUser(FacebookUser facebookUser) {
+        User newUser = new User(facebookUser.getEmail(), facebookUser.getFirst_name(), facebookUser.getLast_name());
         newUser.setUserRole("ROLE_USER");
-        newUser.setHasFacebook((byte)1);
+        newUser.setHasFacebook((byte) 1);
         newUser.setFacebookRegistrationDateUtc(new Timestamp(new Date().getTime()));
 
 
         userRepository.save(newUser);
-        CustomUserPrincipal customUserPrincipal = new CustomUserPrincipal(modelMapper.map(newUser,UserDTO.class));
-        String jwtToken = jwtTokenGenerator.generateTokenWithPrefix(customUserPrincipal);
+        CustomUserPrincipal customUserPrincipal = new CustomUserPrincipal(modelMapper.map(newUser, UserDTO.class));
 
-        return jwtToken;
+        return jwtTokenGenerator.generateTokenWithPrefix(customUserPrincipal);
     }
 
 }
