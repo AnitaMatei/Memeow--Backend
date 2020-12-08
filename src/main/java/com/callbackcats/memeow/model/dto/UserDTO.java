@@ -2,10 +2,7 @@ package com.callbackcats.memeow.model.dto;
 
 import com.callbackcats.memeow.model.entity.Meme;
 import com.google.gson.Gson;
-import lombok.AccessLevel;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 import javax.persistence.Basic;
 import javax.persistence.Column;
@@ -30,6 +27,7 @@ public class UserDTO {
     private Timestamp instagramRegistrationDateUtc;
     private String userRole;
     private Long xp;
+    private String profileUuid;
     private Collection<MemeDTO> memesByUserId;
 
     @Override

@@ -35,8 +35,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .cors()
                 .and()
                 .authorizeRequests()
-                .antMatchers("/api/authenticate/*").permitAll()
-                .antMatchers("/api/profile").hasRole("USER")
+                .antMatchers("/api/profile/own").hasRole("USER")
+                .antMatchers("/api/**").permitAll()
                 .anyRequest().authenticated()
                 .and()
                 .addFilter(new JwtAuthorizationFilter(authenticationManager(),userService,jwtTokenGenerator));

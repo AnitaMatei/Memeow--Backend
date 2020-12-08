@@ -21,6 +21,7 @@ import org.springframework.web.server.ResponseStatusException;
 import java.sql.Timestamp;
 import java.util.Date;
 import java.util.Optional;
+import java.util.UUID;
 
 @Service
 @Slf4j
@@ -82,7 +83,7 @@ public class AuthenticationService {
     }
 
     private String facebookRegisterUser(FacebookUser facebookUser) {
-        User newUser = new User(facebookUser.getEmail(), facebookUser.getFirst_name(), facebookUser.getLast_name());
+        User newUser = new User(facebookUser.getEmail(), facebookUser.getFirst_name(), facebookUser.getLast_name(), UUID.randomUUID().toString().replace("-",""));
         newUser.setUserRole("ROLE_USER");
         newUser.setHasFacebook((byte) 1);
         newUser.setFacebookRegistrationDateUtc(new Timestamp(new Date().getTime()));

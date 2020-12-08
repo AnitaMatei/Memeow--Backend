@@ -23,4 +23,10 @@ public class UserService {
 
         return optionalUser.map((user) -> modelMapper.map(user, UserDTO.class)).orElse(null);
     }
+
+    public UserDTO findByProfileUuid(String profileUuid){
+        Optional<User> optionalUser = userRepository.findByProfileUuid(profileUuid);
+
+        return optionalUser.map((user) -> modelMapper.map(user, UserDTO.class)).orElse(null);
+    }
 }
