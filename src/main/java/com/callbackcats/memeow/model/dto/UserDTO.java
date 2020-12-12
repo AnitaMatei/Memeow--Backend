@@ -1,11 +1,8 @@
 package com.callbackcats.memeow.model.dto;
 
-import com.callbackcats.memeow.model.entity.Meme;
 import com.google.gson.Gson;
 import lombok.*;
 
-import javax.persistence.Basic;
-import javax.persistence.Column;
 import java.sql.Timestamp;
 import java.util.Collection;
 
