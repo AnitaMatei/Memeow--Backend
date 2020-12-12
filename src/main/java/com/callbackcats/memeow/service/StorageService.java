@@ -9,17 +9,14 @@ import org.springframework.stereotype.Service;
 @Service
 @Slf4j
 public class StorageService {
-    private final String AZURE_STORAGE_CONNECTION_STRING =
-            "DefaultEndpointsProtocol=https;" +
-            "AccountName=memeowstorage;" +
-            "AccountKey=llQxGeVBUkHK623VEkDkAMpasfSGcf42JLZkZPTzNiWGaAUbpCV2vGfw3oyz/YKkIgZ7cjufzdgzTxxMVLBptA==";
-    private final String MEME_STORAGE_CONTAINER = "memetemplates";
+    private final String AZURE_STORAGE_CONNECTION_STRING = System.getenv("AZURE_STORAGE_CONNECTION_STRING");
+    private final String STORAGE_CONTAINER = System.getenv("AZURE_STORAGE_MEME_CONTAINER");
     private BlobServiceClient blobServiceClient;
     private BlobContainerClient containerClient;
 
     public StorageService(){
         blobServiceClient = new BlobServiceClientBuilder().connectionString(AZURE_STORAGE_CONNECTION_STRING).buildClient();
-        containerClient = blobServiceClient.getBlobContainerClient(MEME_STORAGE_CONTAINER);
+        containerClient = blobServiceClient.getBlobContainerClient(STORAGE_CONTAINER);
     }
 
 }

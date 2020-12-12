@@ -1,5 +1,5 @@
 spring:
   datasource:
-    password: Memeow1234
-    url: jdbc:mysql://memeow452.mysql.database.azure.com:3306/memeow_db?useSSL=true&requireSSL=false&serverTimezone=UTC
-    username: memeowadmin@memeow452
+    password: ${DB_PASSWORD}
+    url: ${DB_URL}
+    username: ${DB_USER}
