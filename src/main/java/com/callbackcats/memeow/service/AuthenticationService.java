@@ -1,8 +1,8 @@
 package com.callbackcats.memeow.service;
 
+import com.callbackcats.memeow.model.CustomUserPrincipal;
 import com.callbackcats.memeow.model.FacebookAuthResponse;
 import com.callbackcats.memeow.model.FacebookUser;
-import com.callbackcats.memeow.model.CustomUserPrincipal;
 import com.callbackcats.memeow.model.LoginResponse;
 import com.callbackcats.memeow.model.dto.UserDTO;
 import com.callbackcats.memeow.model.entity.User;
@@ -11,7 +11,6 @@ import com.callbackcats.memeow.security.JwtConstants;
 import com.callbackcats.memeow.security.JwtTokenGenerator;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -74,7 +73,7 @@ public class AuthenticationService {
 
     private String facebookLoginUser(User user) {
         if (user.getHasFacebook() == 0) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Existing email account");
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Existing email account");
         }
 
         CustomUserPrincipal customUserPrincipal = new CustomUserPrincipal(modelMapper.map(user, UserDTO.class));
