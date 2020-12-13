@@ -1,23 +1,17 @@
 package com.callbackcats.memeow.model.dto;
 
-import com.callbackcats.memeow.model.entity.Image;
-import com.callbackcats.memeow.model.entity.Meme;
-import com.callbackcats.memeow.model.entity.Tag;
 import com.google.gson.Gson;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.util.Set;
-
 @Setter
 @Getter
 @EqualsAndHashCode
 public class TemplateDTO {
-    Set<TagDTO> tagsByTagId;
-    Set<MemeDTO> memesByMemeId;
     private String templateName;
-    private Image imageByImageId;
+    private Integer minRequiredLevel;
+    String imageUrl;
 
     @Override
     public String toString() {

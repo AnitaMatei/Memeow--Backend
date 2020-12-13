@@ -1,10 +1,11 @@
 package com.callbackcats.memeow.model.dto;
 
 import com.google.gson.Gson;
-import lombok.*;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.sql.Timestamp;
-import java.util.Collection;
 
 @Setter
 @Getter
@@ -25,7 +26,6 @@ public class UserDTO {
     private String userRole;
     private Long xp;
     private String profileUuid;
-    private Collection<MemeDTO> memesByUserId;
 
     @Override
     public String toString() {

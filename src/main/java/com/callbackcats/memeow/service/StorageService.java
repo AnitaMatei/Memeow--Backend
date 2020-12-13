@@ -17,6 +17,10 @@ public class StorageService {
     public StorageService(){
         blobServiceClient = new BlobServiceClientBuilder().connectionString(AZURE_STORAGE_CONNECTION_STRING).buildClient();
         containerClient = blobServiceClient.getBlobContainerClient(STORAGE_CONTAINER);
+//
+//        for (BlobItem blobItem : containerClient.listBlobs()) {
+//            System.out.println("\t" + blobItem.getName());
+//        }
     }
 
 }
