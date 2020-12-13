@@ -19,17 +19,28 @@ public class TemplateService {
     TemplateRepository templateRepository;
     ModelMapper modelMapper;
 
-    public TemplateService(TemplateRepository templateRepository, ModelMapper modelMapper){
+    public TemplateService(TemplateRepository templateRepository, ModelMapper modelMapper) {
         this.templateRepository = templateRepository;
         this.modelMapper = modelMapper;
-        modelMapper.typeMap(Template.class,TemplateDTO.class).addMappings(mapper -> mapper.map(src -> src.getImageByImageId().getImageUrl(),TemplateDTO::setImageUrl));
+        modelMapper.typeMap(Template.class, TemplateDTO.class).addMappings(mapper -> mapper.map(src -> src.getImageByImageId().getImageUrl(), TemplateDTO::setImageUrl));
     }
 
-    public List<TemplateDTO> searchTemplates(Optional<String> contaningStr, Integer level, Integer pageNumber, Integer pageSize){
-        Pageable page = PageRequest.of(pageNumber,pageSize);
+    public List<TemplateDTO> searchAvailableTemplates(Optional<String> contaningStr, Integer maxLevel, Integer minLevel, Integer pageNumber, Integer pageSize) {
+        Pageable page = PageRequest.of(pageNumber, pageSize);
         List<Template> templates = contaningStr
-                .map(str -> templateRepository.findByIgnoreCaseTemplateNameContainingAndMinRequiredLevelEquals(str,level,page))
-                .orElse(templateRepository.findByMinRequiredLevelEquals(level,page));
+                .map(str -> templateRepository.findByIgnoreCaseTemplateNameContainingAndMinRequiredLevelLessThanEqualAndMinRequiredLevelGreaterThanEqualOrderByMinRequiredLevelAsc(str, maxLevel, minLevel, page))
+                .orElse(templateRepository.findByMinRequiredLevelLessThanEqualAndMinRequiredLevelGreaterThanEqualOrderByMinRequiredLevelAsc(maxLevel,minLevel, page));
+
+        return templates.stream()
+                .map(template -> modelMapper.map(template, TemplateDTO.class))
+                .collect(Collectors.toList());
+    }
+
+    public List<TemplateDTO> searchUnavailableTemplates(Optional<String> contaningStr, Integer level, Integer pageNumber, Integer pageSize) {
+        Pageable page = PageRequest.of(pageNumber, pageSize);
+        List<Template> templates = contaningStr
+                .map(str -> templateRepository.findByIgnoreCaseTemplateNameContainingAndMinRequiredLevelGreaterThanOrderByMinRequiredLevelAsc(str, level, page))
+                .orElse(templateRepository.findByMinRequiredLevelGreaterThanOrderByMinRequiredLevelAsc(level, page));
 
         return templates.stream()
                 .map(template -> modelMapper.map(template, TemplateDTO.class))

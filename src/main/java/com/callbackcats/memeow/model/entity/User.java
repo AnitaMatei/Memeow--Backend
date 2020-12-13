@@ -5,7 +5,6 @@ import lombok.*;
 import javax.persistence.*;
 import java.sql.Timestamp;
 import java.util.Collection;
-import java.util.Objects;
 
 @Entity
 @Setter
@@ -62,8 +61,11 @@ public class User {
     @Column(name = "instagram_registration_date_UTC")
     private Timestamp instagramRegistrationDateUtc;
     @Basic
-    @Column(name = "xp")
-    private Long xp;
+    @Column(name = "current_xp")
+    private Long currentXp = 0L;
+    @Basic
+    @Column(name="current_level")
+    private Integer currentLevel = 1;
     @Basic
     @Column(name = "profile_uuid")
     @NonNull

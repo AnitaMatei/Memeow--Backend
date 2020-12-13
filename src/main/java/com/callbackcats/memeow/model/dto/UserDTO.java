@@ -24,7 +24,8 @@ public class UserDTO {
     private Byte hasInstagram;
     private Timestamp instagramRegistrationDateUtc;
     private String userRole;
-    private Long xp;
+    private Long currentXp;
+    private Integer currentLevel;
     private String profileUuid;
 
     @Override
