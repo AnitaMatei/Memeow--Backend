@@ -21,7 +21,7 @@ public class JwtTokenGenerator {
         return JWT.create()
                 .withSubject(customUserPrincipal.getUsername())
                 .withIssuedAt(new Date(System.currentTimeMillis()))
-                .withExpiresAt(new Date(System.currentTimeMillis() + JwtConstants.TOKEN_EXPIRATION_TIME))
+                //.withExpiresAt(new Date(System.currentTimeMillis() + JwtConstants.TOKEN_EXPIRATION_TIME))
                 .sign(Algorithm.HMAC512(JwtConstants.SECRET.getBytes()));
     }
 

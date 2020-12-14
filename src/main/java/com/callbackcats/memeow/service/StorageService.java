@@ -1,8 +1,10 @@
 package com.callbackcats.memeow.service;
 
+import com.azure.storage.blob.BlobClient;
 import com.azure.storage.blob.BlobContainerClient;
 import com.azure.storage.blob.BlobServiceClient;
 import com.azure.storage.blob.BlobServiceClientBuilder;
+import com.azure.storage.blob.models.BlobHttpHeaders;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -32,7 +34,13 @@ public class StorageService {
     }
 
     public void uploadMeme(ByteArrayInputStream inputStream, String fileName){
-        memeContainerClient.getBlobClient(fileName).upload(inputStream,inputStream.available());
+        BlobClient blob = memeContainerClient.getBlobClient(fileName);
+
+        blob.upload(inputStream,inputStream.available());
+
+        BlobHttpHeaders blobHttpHeaders = new BlobHttpHeaders();
+        blobHttpHeaders.setContentType("image/jpeg");
+        blob.setHttpHeaders(blobHttpHeaders);
     }
 
 }
