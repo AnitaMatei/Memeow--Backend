@@ -9,5 +9,6 @@ import java.util.Optional;
 @Repository
 public interface MemeRepository extends JpaRepository<Meme,Integer> {
     Optional<Meme> findByMemeId(Integer id);
+    Optional<Meme> findByMemeBusinessId(String id);
 
 }

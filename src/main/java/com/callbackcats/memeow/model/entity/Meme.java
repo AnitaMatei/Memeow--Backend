@@ -6,7 +6,6 @@ import lombok.Setter;
 
 import javax.persistence.*;
 import java.sql.Timestamp;
-import java.util.Objects;
 import java.util.Set;
 
 @Entity
@@ -26,17 +25,14 @@ public class Meme {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer memeId;
     @Basic
+    @Column(name = "meme_business_id")
+    private String memeBusinessId;
+    @Basic
     @Column(name = "meme_url")
     private String memeUrl;
     @Basic
-    @Column(name = "storage_location")
-    private String storageLocation;
-    @Basic
-    @Column(name = "meme_title")
-    private String memeTitle;
-    @Basic
     @Column(name = "reaction_count")
-    private Integer reactionCount;
+    private Integer reactionCount = 0;
     @Basic
     @Column(name = "date_time_UTC")
     private Timestamp dateTimeUtc;
