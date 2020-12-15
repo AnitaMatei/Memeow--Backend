@@ -1,17 +1,13 @@
 package com.callbackcats.memeow.model.entity;
 
+import lombok.Data;
 import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.Setter;
 
 import javax.persistence.*;
-import java.util.Objects;
 import java.util.Set;
 
 @Entity
-@Setter
-@Getter
-@EqualsAndHashCode
+@Data
 public class Tag {
     @ManyToMany
     @JoinTable(
@@ -19,7 +15,8 @@ public class Tag {
             joinColumns = @JoinColumn(name="tag_id"),
             inverseJoinColumns = @JoinColumn(name="template_id")
     )
-    Set<Template> templatesByTemplateId;
+    @EqualsAndHashCode.Exclude
+    Set<Template> templates;
     @Id
     @Column(name = "tag_id")
     private Integer tagId;

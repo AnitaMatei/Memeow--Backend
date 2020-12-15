@@ -1,5 +1,6 @@
 package com.callbackcats.memeow.service;
 
+import com.callbackcats.memeow.exception.TemplateNotFoundException;
 import com.callbackcats.memeow.model.dto.TemplateDTO;
 import com.callbackcats.memeow.model.entity.Template;
 import com.callbackcats.memeow.repository.TemplateRepository;
@@ -22,7 +23,6 @@ public class TemplateService {
     public TemplateService(TemplateRepository templateRepository, ModelMapper modelMapper) {
         this.templateRepository = templateRepository;
         this.modelMapper = modelMapper;
-        modelMapper.typeMap(Template.class, TemplateDTO.class).addMappings(mapper -> mapper.map(src -> src.getImageByImageId().getImageUrl(), TemplateDTO::setImageUrl));
     }
 
     public List<TemplateDTO> searchAvailableTemplates(Optional<String> contaningStr, Integer maxLevel, Integer minLevel, Integer pageNumber, Integer pageSize) {
@@ -45,5 +45,11 @@ public class TemplateService {
         return templates.stream()
                 .map(template -> modelMapper.map(template, TemplateDTO.class))
                 .collect(Collectors.toList());
+    }
+
+    public TemplateDTO findTemplateByTemplateName(String templateName) throws TemplateNotFoundException {
+        return templateRepository.findByTemplateName(templateName)
+                .map(template -> modelMapper.map(template,TemplateDTO.class))
+                .orElseThrow(()->new TemplateNotFoundException("Template was not found."));
     }
 }

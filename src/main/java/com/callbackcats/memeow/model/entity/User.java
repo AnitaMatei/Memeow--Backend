@@ -7,8 +7,7 @@ import java.sql.Timestamp;
 import java.util.Collection;
 
 @Entity
-@Setter
-@Getter
+@Data
 @NoArgsConstructor
 @RequiredArgsConstructor
 public class User {
@@ -73,6 +72,7 @@ public class User {
     @Basic
     @Column
     private String userRole;
-    @OneToMany(mappedBy = "userByUserId")
-    private Collection<Meme> memesByUserId;
+    @OneToMany(mappedBy = "user")
+    @EqualsAndHashCode.Exclude
+    private Collection<Meme> memes;
 }
