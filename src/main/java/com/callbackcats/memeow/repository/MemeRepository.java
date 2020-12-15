@@ -1,6 +1,7 @@
 package com.callbackcats.memeow.repository;
 
 import com.callbackcats.memeow.model.entity.Meme;
+import com.callbackcats.memeow.model.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -10,5 +11,5 @@ import java.util.Optional;
 public interface MemeRepository extends JpaRepository<Meme,Integer> {
     Optional<Meme> findByMemeId(Integer id);
     Optional<Meme> findByMemeBusinessId(String id);
-
+    Optional<Meme> findByUserOrderByDateTimeUtcDesc(User user);
 }
