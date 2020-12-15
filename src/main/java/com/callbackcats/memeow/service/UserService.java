@@ -1,8 +1,11 @@
 package com.callbackcats.memeow.service;
 
 import com.callbackcats.memeow.exception.ProfileNotFoundException;
+import com.callbackcats.memeow.model.dto.MemeDTO;
 import com.callbackcats.memeow.model.dto.UserDTO;
+import com.callbackcats.memeow.model.entity.Meme;
 import com.callbackcats.memeow.model.entity.User;
+import com.callbackcats.memeow.repository.MemeRepository;
 import com.callbackcats.memeow.repository.UserRepository;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
@@ -12,10 +15,12 @@ import java.util.Optional;
 @Service
 public class UserService {
     UserRepository userRepository;
+    MemeRepository memeRepository;
     ModelMapper modelMapper;
 
-    public UserService(UserRepository userRepository, ModelMapper modelMapper) {
+    public UserService(UserRepository userRepository, MemeRepository memeRepository, ModelMapper modelMapper) {
         this.userRepository = userRepository;
+        this.memeRepository = memeRepository;
         this.modelMapper = modelMapper;
     }
 
@@ -25,10 +30,18 @@ public class UserService {
         return optionalUser.map((user) -> modelMapper.map(user, UserDTO.class)).orElse(null);
     }
 
-    public UserDTO findByProfileUuid(String profileUuid) throws ProfileNotFoundException {
+    public UserDTO findProfileByProfileUuid(String profileUuid) throws ProfileNotFoundException {
         Optional<User> optionalUser = userRepository.findByProfileUuid(profileUuid);
 
-        return optionalUser.map((user) -> modelMapper.map(user, UserDTO.class))
+        return optionalUser.map((user) -> {
+            UserDTO profile = modelMapper.map(user, UserDTO.class);
+            Optional<Meme> lastMeme = memeRepository.findFirstByUserOrderByDateTimeUtcDesc(user);
+            if(lastMeme.isEmpty())
+                return profile;
+
+            profile.setLastMeme(modelMapper.map(lastMeme.get(),MemeDTO.class));
+            return profile;
+        })
                 .orElseThrow(() -> new ProfileNotFoundException("Profile not found."));
     }
 }

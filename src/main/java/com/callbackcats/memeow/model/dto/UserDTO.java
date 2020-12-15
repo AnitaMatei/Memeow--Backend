@@ -1,15 +1,11 @@
 package com.callbackcats.memeow.model.dto;
 
 import com.google.gson.Gson;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Data;
 
 import java.sql.Timestamp;
 
-@Setter
-@Getter
-@EqualsAndHashCode
+@Data
 public class UserDTO {
     private String username;
     private String email;
@@ -27,6 +23,8 @@ public class UserDTO {
     private Long currentXp;
     private Integer currentLevel;
     private String profileUuid;
+    private MemeDTO lastMeme;
+
 
     @Override
     public String toString() {

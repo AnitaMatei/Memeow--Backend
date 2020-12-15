@@ -11,5 +11,5 @@ import java.util.Optional;
 public interface MemeRepository extends JpaRepository<Meme,Integer> {
     Optional<Meme> findByMemeId(Integer id);
     Optional<Meme> findByMemeBusinessId(String id);
-    Optional<Meme> findByUserOrderByDateTimeUtcDesc(User user);
+    Optional<Meme> findFirstByUserOrderByDateTimeUtcDesc(User user);
 }
