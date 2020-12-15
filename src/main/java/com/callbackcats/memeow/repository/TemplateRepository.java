@@ -11,6 +11,8 @@ import java.util.Optional;
 @Repository
 public interface TemplateRepository extends JpaRepository<Template, Integer> {
     Optional<Template> findByTemplateId(Integer id);
-    List<Template> findByIgnoreCaseTemplateNameContainingAndMinRequiredLevelEquals(String name, Integer level, Pageable pageable);
-    List<Template> findByMinRequiredLevelEquals(Integer level, Pageable pageable);
+    List<Template> findByIgnoreCaseTemplateNameContainingAndMinRequiredLevelLessThanEqualAndMinRequiredLevelGreaterThanEqualOrderByMinRequiredLevelAsc(String name, Integer maxLevel, Integer minLevel,  Pageable pageable);
+    List<Template> findByMinRequiredLevelLessThanEqualAndMinRequiredLevelGreaterThanEqualOrderByMinRequiredLevelAsc(Integer maxLevel, Integer minLevel, Pageable pageable);
+    List<Template> findByIgnoreCaseTemplateNameContainingAndMinRequiredLevelGreaterThanOrderByMinRequiredLevelAsc(String name, Integer level, Pageable pageable);
+    List<Template> findByMinRequiredLevelGreaterThanOrderByMinRequiredLevelAsc(Integer level, Pageable pageable);
 }
