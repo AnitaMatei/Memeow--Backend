@@ -1,5 +1,6 @@
 package com.callbackcats.memeow.service;
 
+import com.callbackcats.memeow.exception.ProfileNotFoundException;
 import com.callbackcats.memeow.model.dto.UserDTO;
 import com.callbackcats.memeow.model.entity.User;
 import com.callbackcats.memeow.repository.UserRepository;
@@ -24,9 +25,10 @@ public class UserService {
         return optionalUser.map((user) -> modelMapper.map(user, UserDTO.class)).orElse(null);
     }
 
-    public UserDTO findByProfileUuid(String profileUuid){
+    public UserDTO findByProfileUuid(String profileUuid) throws ProfileNotFoundException {
         Optional<User> optionalUser = userRepository.findByProfileUuid(profileUuid);
 
-        return optionalUser.map((user) -> modelMapper.map(user, UserDTO.class)).orElse(null);
+        return optionalUser.map((user) -> modelMapper.map(user, UserDTO.class))
+                .orElseThrow(() -> new ProfileNotFoundException("Profile not found."));
     }
 }

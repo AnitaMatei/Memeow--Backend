@@ -1,16 +1,14 @@
 package com.callbackcats.memeow.model.entity;
 
+import lombok.Data;
 import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.Setter;
 
 import javax.persistence.*;
+import java.util.HashSet;
 import java.util.Set;
 
 @Entity
-@Setter
-@Getter
-@EqualsAndHashCode
+@Data
 public class Template {
     @ManyToMany
     @JoinTable(
@@ -18,14 +16,16 @@ public class Template {
             joinColumns = @JoinColumn(name = "template_id"),
             inverseJoinColumns = @JoinColumn(name = "tag_id")
     )
-    Set<Tag> tagsByTagId;
+    @EqualsAndHashCode.Exclude
+    Set<Tag> tags = new HashSet<>();
     @ManyToMany
     @JoinTable(
             name = "meme_temp",
             joinColumns = @JoinColumn(name = "template_id"),
             inverseJoinColumns = @JoinColumn(name = "meme_id")
     )
-    Set<Meme> memesByMemeId;
+    @EqualsAndHashCode.Exclude
+    Set<Meme> memes = new HashSet<>();
     @Id
     @Column(name = "template_id")
     private Integer templateId;
@@ -37,5 +37,6 @@ public class Template {
     private Integer minRequiredLevel;
     @ManyToOne
     @JoinColumn(name = "image_id", referencedColumnName = "image_id", nullable = false)
-    private Image imageByImageId;
+    @EqualsAndHashCode.Exclude
+    private Image image;
 }

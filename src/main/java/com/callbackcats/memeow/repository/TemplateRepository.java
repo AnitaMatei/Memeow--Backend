@@ -15,4 +15,5 @@ public interface TemplateRepository extends JpaRepository<Template, Integer> {
     List<Template> findByMinRequiredLevelLessThanEqualAndMinRequiredLevelGreaterThanEqualOrderByMinRequiredLevelAsc(Integer maxLevel, Integer minLevel, Pageable pageable);
     List<Template> findByIgnoreCaseTemplateNameContainingAndMinRequiredLevelGreaterThanOrderByMinRequiredLevelAsc(String name, Integer level, Pageable pageable);
     List<Template> findByMinRequiredLevelGreaterThanOrderByMinRequiredLevelAsc(Integer level, Pageable pageable);
+    Optional<Template> findByTemplateName(String templateName);
 }

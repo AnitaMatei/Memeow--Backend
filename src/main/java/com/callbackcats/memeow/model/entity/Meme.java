@@ -1,17 +1,15 @@
 package com.callbackcats.memeow.model.entity;
 
+import lombok.Data;
 import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.Setter;
 
 import javax.persistence.*;
 import java.sql.Timestamp;
+import java.util.HashSet;
 import java.util.Set;
 
 @Entity
-@Setter
-@Getter
-@EqualsAndHashCode
+@Data
 public class Meme {
     @ManyToMany
     @JoinTable(
@@ -19,7 +17,8 @@ public class Meme {
             joinColumns = @JoinColumn(name = "meme_id"),
             inverseJoinColumns = @JoinColumn(name = "template_id")
     )
-    Set<Template> templatesByTemplateId;
+    @EqualsAndHashCode.Exclude
+    Set<Template> templates = new HashSet<>();
     @Id
     @Column(name = "meme_id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -38,5 +37,6 @@ public class Meme {
     private Timestamp dateTimeUtc;
     @ManyToOne
     @JoinColumn(name = "user_id", referencedColumnName = "user_id")
-    private User userByUserId;
+    @EqualsAndHashCode.Exclude
+    private User user;
 }

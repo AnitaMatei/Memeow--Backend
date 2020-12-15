@@ -1,6 +1,8 @@
 package com.callbackcats.memeow.controller;
 
+import com.callbackcats.memeow.exception.ProfileNotFoundException;
 import com.callbackcats.memeow.model.CustomUserPrincipal;
+import com.callbackcats.memeow.model.dto.UserDTO;
 import com.callbackcats.memeow.service.UserService;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -20,14 +22,14 @@ public class ProfileController {
 
 
     @GetMapping("/{id}")
-    public String getUserProfile(@PathVariable String id){
-        return userService.findByProfileUuid(id).toString();
+    public UserDTO getUserProfile(@PathVariable String id) throws ProfileNotFoundException {
+        return userService.findByProfileUuid(id);
     }
 
     @GetMapping("/own")
-    public String getOwnProfile(){
+    public UserDTO getOwnProfile(){
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         CustomUserPrincipal customUserPrincipal = (CustomUserPrincipal)authentication.getPrincipal();
-        return customUserPrincipal.getUser().toString();
+        return customUserPrincipal.getUser();
     }
 }

@@ -33,7 +33,7 @@ public class StorageService {
 //        }
     }
 
-    public void uploadMeme(ByteArrayInputStream inputStream, String fileName){
+    public void uploadImage(ByteArrayInputStream inputStream, String fileName){
         BlobClient blob = memeContainerClient.getBlobClient(fileName);
 
         blob.upload(inputStream,inputStream.available());

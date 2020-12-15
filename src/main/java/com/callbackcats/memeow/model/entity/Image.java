@@ -1,16 +1,13 @@
 package com.callbackcats.memeow.model.entity;
 
+import lombok.Data;
 import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.Setter;
 
 import javax.persistence.*;
 import java.util.Collection;
 
 @Entity
-@Setter
-@Getter
-@EqualsAndHashCode
+@Data
 public class Image {
     @Id
     @Column(name = "image_id")
@@ -18,6 +15,7 @@ public class Image {
     @Basic
     @Column(name = "image_url")
     private String imageUrl;
-    @OneToMany(mappedBy = "imageByImageId")
-    private Collection<Template> templatesByImageId;
+    @OneToMany(mappedBy = "image")
+    @EqualsAndHashCode.Exclude
+    private Collection<Template> templates;
 }
