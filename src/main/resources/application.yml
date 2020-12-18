@@ -3,3 +3,5 @@ spring:
     password: ${DB_PASSWORD}
     url: ${DB_URL}
     username: ${DB_USER}
+    hikari:
+      max-lifetime: 0
