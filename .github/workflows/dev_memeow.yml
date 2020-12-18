@@ -28,5 +28,5 @@ jobs:
       with:
         app-name: 'memeow'
         slot-name: 'production'
-        publish-profile: ${{ secrets.AzureAppService_PublishProfile_b243e3dd613d4a769fd1fa536e63bc3e }}
+        publish-profile: ${{ secrets.AzureAppService_PublishProfile_66e48b9dbfbb4458a3d4d1e6c016e085 }}
         package: '${{ github.workspace }}/target/*.war'
