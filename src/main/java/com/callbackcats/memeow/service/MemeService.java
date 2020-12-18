@@ -43,7 +43,7 @@ public class MemeService {
     }
 
 
-    public MemeDTO createAndUploadMeme(MultipartFile file, String templateName, UserDTO user) throws TemplateNotFoundException, BadImageException {
+    public MemeDTO createAndUploadMeme(MultipartFile file, String templateName, UserDTO user){
         ByteArrayOutputStream outputStream;
         try {
             outputStream = convertToJpeg(file.getInputStream());
@@ -58,7 +58,7 @@ public class MemeService {
         return meme;
     }
 
-    public MemeDTO saveMeme(String templateName, UserDTO user) throws TemplateNotFoundException {
+    public MemeDTO saveMeme(String templateName, UserDTO user){
         Meme newMeme = new Meme();
 
         newMeme.setDateTimeUtc(new Timestamp(new Date().getTime()));
@@ -70,21 +70,20 @@ public class MemeService {
         return modelMapper.map(memeRepository.save(newMeme), MemeDTO.class);
     }
 
-    public MemeDTO findMemeByMemeBusinessId(String id) throws MemeNotFoundException {
+    public MemeDTO findMemeByMemeBusinessId(String id){
         return memeRepository.findByMemeBusinessId(id)
                 .map(meme -> modelMapper.map(meme, MemeDTO.class))
                 .orElseThrow(() -> new MemeNotFoundException("Meme not found."));
     }
 
-    private ByteArrayOutputStream convertToJpeg(InputStream inputStream) throws BadImageException {
+    private ByteArrayOutputStream convertToJpeg(InputStream inputStream){
         BufferedImage bufferedImage = null;
         try {
             bufferedImage = ImageIO.read(inputStream);
         } catch (IOException e) {
             log.error(e.getMessage());
-        }
-        if (bufferedImage == null)
             throw new BadImageException("File is not an image.");
+        }
         BufferedImage nonTransparentCopy = new BufferedImage(bufferedImage.getWidth(), bufferedImage.getHeight(), BufferedImage.TYPE_INT_RGB);    //jesus f christ f this
         nonTransparentCopy.createGraphics().drawImage(bufferedImage, 0, 0, Color.WHITE, null);
 
@@ -94,6 +93,7 @@ public class MemeService {
             ImageIO.write(nonTransparentCopy, "jpeg", outputStream);
         } catch (IOException e) {
             log.error(e.getMessage());
+            throw new BadImageException("File is not an image.");
         }
         return outputStream;
     }
