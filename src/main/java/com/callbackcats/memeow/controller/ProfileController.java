@@ -5,6 +5,8 @@ import com.callbackcats.memeow.model.CustomUserPrincipal;
 import com.callbackcats.memeow.model.dto.UserDTO;
 import com.callbackcats.memeow.service.MemeService;
 import com.callbackcats.memeow.service.UserService;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -24,14 +26,15 @@ public class ProfileController {
     }
 
     @GetMapping("/{id}")
-    public UserDTO getUserProfile(@PathVariable String id) throws ProfileNotFoundException {
-        return userService.findProfileByProfileUuid(id);
+    public ResponseEntity<UserDTO> getUserProfile(@PathVariable String id) throws ProfileNotFoundException {
+        return new ResponseEntity<UserDTO>(userService.findProfileByProfileUuid(id), HttpStatus.FOUND);
     }
 
     @GetMapping("/own")
-    public UserDTO getOwnProfile() throws ProfileNotFoundException {
+    public ResponseEntity<UserDTO> getOwnProfile() throws ProfileNotFoundException {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        CustomUserPrincipal customUserPrincipal = (CustomUserPrincipal)authentication.getPrincipal();
-        return userService.findProfileByProfileUuid(customUserPrincipal.getUser().getProfileUuid());
+        CustomUserPrincipal customUserPrincipal = (CustomUserPrincipal) authentication.getPrincipal();
+
+        return new ResponseEntity<UserDTO>(userService.findProfileByProfileUuid(customUserPrincipal.getUser().getProfileUuid()), HttpStatus.FOUND);
     }
 }

@@ -4,6 +4,7 @@ import com.callbackcats.memeow.exception.MemeNotFoundException;
 import com.callbackcats.memeow.model.CustomUserPrincipal;
 import com.callbackcats.memeow.model.dto.MemeDTO;
 import com.callbackcats.memeow.service.MemeService;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -26,15 +27,15 @@ public class MemeController {
     @ResponseBody
     public ResponseEntity<MemeDTO> createMeme(@RequestParam MultipartFile file, @RequestParam String templateName) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        CustomUserPrincipal customUserPrincipal = (CustomUserPrincipal)authentication.getPrincipal();
+        CustomUserPrincipal customUserPrincipal = (CustomUserPrincipal) authentication.getPrincipal();
         MemeDTO memeDTO = memeService.createAndUploadMeme(file, templateName, customUserPrincipal.getUser());
-        return ResponseEntity.created(URI.create("api/memes/"+memeDTO.getMemeBusinessId())).body(memeDTO);
+        return ResponseEntity.created(URI.create("api/memes/" + memeDTO.getMemeBusinessId())).body(memeDTO);
     }
 
     @GetMapping("/{id}")
     @ResponseBody
     public ResponseEntity<MemeDTO> findMeme(@PathVariable String id) throws MemeNotFoundException {
-        return ResponseEntity.ok(memeService.findMemeByMemeBusinessId(id));
+        return new ResponseEntity<MemeDTO>(memeService.findMemeByMemeBusinessId(id), HttpStatus.FOUND);
     }
 
 }
