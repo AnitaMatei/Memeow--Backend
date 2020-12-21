@@ -32,6 +32,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .csrf().disable()
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()
+                .cors().disable()
+                .and()
                 .authorizeRequests()
                 .antMatchers("/api/profile/own/**").hasRole("USER")
                 .antMatchers("/api/memes/create").hasRole("USER")
@@ -39,6 +41,5 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .and()
                 .addFilter(jwtAuthorizationFilter());
     }
-
 
 }
