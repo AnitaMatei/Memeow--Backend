@@ -33,7 +33,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()
                 .cors().disable()
-                .and()
                 .authorizeRequests()
                 .antMatchers("/api/profile/own/**").hasRole("USER")
                 .antMatchers("/api/memes/create").hasRole("USER")
