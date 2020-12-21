@@ -1,6 +1,5 @@
 package com.callbackcats.memeow.configuration;
 
-import com.callbackcats.memeow.security.CorsFilter;
 import com.callbackcats.memeow.security.JwtAuthorizationFilter;
 import com.callbackcats.memeow.security.JwtTokenGenerator;
 import com.callbackcats.memeow.service.UserService;
@@ -10,7 +9,6 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.web.session.SessionManagementFilter;
 
 @Configuration
 @EnableWebSecurity
@@ -27,11 +25,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     public JwtAuthorizationFilter jwtAuthorizationFilter() throws Exception{
         return new JwtAuthorizationFilter(authenticationManager(),userService,jwtTokenGenerator);
     }
-    @Bean
-    CorsFilter corsFilter() {
-        CorsFilter filter = new CorsFilter();
-        return filter;
-    }
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
@@ -46,8 +39,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/api/memes/create").hasRole("USER")
                 .antMatchers("/api/**").permitAll()
                 .and()
-                .addFilter(jwtAuthorizationFilter())
-                .addFilterBefore(corsFilter(), SessionManagementFilter.class);
+                .addFilter(jwtAuthorizationFilter());
     }
 
 }
