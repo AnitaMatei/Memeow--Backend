@@ -1,6 +1,5 @@
 package com.callbackcats.memeow.controller;
 
-import com.callbackcats.memeow.exception.MemeNotFoundException;
 import com.callbackcats.memeow.model.CustomUserPrincipal;
 import com.callbackcats.memeow.model.dto.MemeDTO;
 import com.callbackcats.memeow.service.MemeService;
@@ -34,8 +33,14 @@ public class MemeController {
 
     @GetMapping("/{id}")
     @ResponseBody
-    public ResponseEntity<MemeDTO> findMeme(@PathVariable String id) throws MemeNotFoundException {
+    public ResponseEntity<MemeDTO> findMeme(@PathVariable String id){
         return new ResponseEntity<MemeDTO>(memeService.findMemeByMemeBusinessId(id), HttpStatus.FOUND);
+    }
+
+    @PutMapping("/{id}/like")
+    @ResponseBody
+    public ResponseEntity<MemeDTO> likeMeme(@PathVariable String id){
+        return ResponseEntity.ok(memeService.likeMeme(id));
     }
 
 }

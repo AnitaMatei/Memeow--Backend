@@ -15,6 +15,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.imageio.ImageIO;
@@ -83,6 +84,14 @@ public class MemeService {
         return memeRepository.findByMemeBusinessId(id)
                 .map(meme -> modelMapper.map(meme, MemeDTO.class))
                 .orElseThrow(() -> new MemeNotFoundException("Meme not found."));
+    }
+
+    @Transactional
+    public MemeDTO likeMeme(String id){
+        Meme meme = memeRepository.findByMemeBusinessId(id).orElseThrow(()->new MemeNotFoundException("Meme does not exist."));
+
+        meme.setReactionCount(meme.getReactionCount()+1);
+        return modelMapper.map(memeRepository.save(meme),MemeDTO.class);
     }
 //
 //    @Scheduled(fixedRate = 86400000)
