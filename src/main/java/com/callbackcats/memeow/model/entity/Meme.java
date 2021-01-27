@@ -46,4 +46,13 @@ public class Meme {
     @EqualsAndHashCode.Exclude
     @ToString.Exclude
     private RecentMeme recentMeme;
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(
+            name = "user_liked_meme",
+            joinColumns = @JoinColumn(name = "meme_id"),
+            inverseJoinColumns = @JoinColumn(name = "user_id")
+    )
+    @EqualsAndHashCode.Exclude
+    @ToString.Exclude
+    private Set<User> likedBy = new HashSet<>();
 }

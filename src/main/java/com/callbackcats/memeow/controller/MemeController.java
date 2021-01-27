@@ -40,7 +40,9 @@ public class MemeController {
     @PutMapping("/{id}/like")
     @ResponseBody
     public ResponseEntity<MemeDTO> likeMeme(@PathVariable String id){
-        return ResponseEntity.ok(memeService.likeMeme(id));
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        CustomUserPrincipal customUserPrincipal = (CustomUserPrincipal) authentication.getPrincipal();
+        return ResponseEntity.ok(memeService.likeMeme(id,customUserPrincipal.getUsername()));
     }
 
 }

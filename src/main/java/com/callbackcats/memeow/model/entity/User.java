@@ -5,6 +5,8 @@ import lombok.*;
 import javax.persistence.*;
 import java.sql.Timestamp;
 import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @Data
@@ -76,4 +78,13 @@ public class User {
     @JoinColumn(name = "level_id", referencedColumnName = "level_id")
     @NonNull
     private Level level;
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(
+            name = "user_liked_meme",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "meme_id")
+    )
+    @EqualsAndHashCode.Exclude
+    @ToString.Exclude
+    private Set<Meme> likedMemes = new HashSet<>();
 }

@@ -87,11 +87,12 @@ public class MemeService {
     }
 
     @Transactional
-    public MemeDTO likeMeme(String id){
+    public MemeDTO likeMeme(String id, String userEmail){
         Meme meme = memeRepository.findByMemeBusinessId(id).orElseThrow(()->new MemeNotFoundException("Meme does not exist."));
 
         meme.setReactionCount(meme.getReactionCount()+1);
-        return modelMapper.map(memeRepository.save(meme),MemeDTO.class);
+        meme.getLikedBy().add(userRepository.findByEmail(userEmail).get());
+        return modelMapper.map(memeRepository.save(meme), MemeDTO.class);
     }
 //
 //    @Scheduled(fixedRate = 86400000)
