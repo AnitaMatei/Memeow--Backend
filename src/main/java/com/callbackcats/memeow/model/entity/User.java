@@ -60,12 +60,6 @@ public class User {
     @Column(name = "instagram_registration_date_UTC")
     private Timestamp instagramRegistrationDateUtc;
     @Basic
-    @Column(name = "current_xp")
-    private Long currentXp = 0L;
-    @Basic
-    @Column(name="current_level")
-    private Integer currentLevel = 1;
-    @Basic
     @Column(name = "profile_uuid")
     @NonNull
     private String profileUuid;
@@ -75,4 +69,11 @@ public class User {
     @OneToMany(mappedBy = "user")
     @EqualsAndHashCode.Exclude
     private Collection<Meme> memes;
+    @OneToOne(mappedBy = "userByUserId")
+    @EqualsAndHashCode.Exclude
+    private Leaderboard leaderboardPlaceByUserId;
+    @OneToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "level_id", referencedColumnName = "level_id")
+    @NonNull
+    private Level level;
 }

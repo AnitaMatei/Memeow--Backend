@@ -6,11 +6,14 @@ import com.callbackcats.memeow.exception.TemplateNotFoundException;
 import com.callbackcats.memeow.model.dto.MemeDTO;
 import com.callbackcats.memeow.model.dto.UserDTO;
 import com.callbackcats.memeow.model.entity.Meme;
+import com.callbackcats.memeow.model.entity.RecentMeme;
 import com.callbackcats.memeow.repository.MemeRepository;
+import com.callbackcats.memeow.repository.RecentMemeRepository;
 import com.callbackcats.memeow.repository.TemplateRepository;
 import com.callbackcats.memeow.repository.UserRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
+import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -27,21 +30,23 @@ import java.util.UUID;
 
 @Service
 @Slf4j
+@EnableScheduling
 public class MemeService {
     MemeRepository memeRepository;
     TemplateRepository templateRepository;
     StorageService storageService;
     UserRepository userRepository;
     ModelMapper modelMapper;
+    RecentMemeRepository recentMemeRepository;
 
-    public MemeService(MemeRepository memeRepository, TemplateRepository templateRepository, StorageService storageService, UserRepository userRepository, ModelMapper modelMapper) {
+    public MemeService(MemeRepository memeRepository, TemplateRepository templateRepository, StorageService storageService, UserRepository userRepository, ModelMapper modelMapper, RecentMemeRepository recentMemeRepository) {
         this.memeRepository = memeRepository;
         this.templateRepository = templateRepository;
         this.storageService = storageService;
         this.userRepository = userRepository;
         this.modelMapper = modelMapper;
+        this.recentMemeRepository = recentMemeRepository;
     }
-
 
     public MemeDTO createAndUploadMeme(MultipartFile file, String templateName, UserDTO user){
         ByteArrayOutputStream outputStream;
@@ -67,13 +72,26 @@ public class MemeService {
         newMeme.getTemplates().add(templateRepository.findByTemplateName(templateName).orElseThrow(() -> new TemplateNotFoundException("Template not found.")));
         newMeme.setUser(userRepository.findByProfileUuid(user.getProfileUuid()).orElse(null));
 
-        return modelMapper.map(memeRepository.save(newMeme), MemeDTO.class);
+        newMeme = memeRepository.save(newMeme);
+
+        addToRecent(newMeme);
+
+        return modelMapper.map(newMeme, MemeDTO.class);
     }
 
     public MemeDTO findMemeByMemeBusinessId(String id){
         return memeRepository.findByMemeBusinessId(id)
                 .map(meme -> modelMapper.map(meme, MemeDTO.class))
                 .orElseThrow(() -> new MemeNotFoundException("Meme not found."));
+    }
+//
+//    @Scheduled(fixedRate = 86400000)
+//    public void resetRecentMemes(){
+//        recentMemeRepository.deleteAll();
+//    }
+
+    private void addToRecent(Meme newMeme){
+        recentMemeRepository.save(new RecentMeme(newMeme));
     }
 
     private ByteArrayOutputStream convertToJpeg(InputStream inputStream){
@@ -97,5 +115,6 @@ public class MemeService {
         }
         return outputStream;
     }
+
 
 }

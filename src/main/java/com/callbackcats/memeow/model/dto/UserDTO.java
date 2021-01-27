@@ -11,10 +11,9 @@ public class UserDTO {
     private String lastName;
     private String iconUrl;
     private String userRole;
-    private Long currentXp;
-    private Integer currentLevel;
     private String profileUuid;
     private MemeDTO lastMeme;
+    private LevelDTO level;
 
 
     @Override

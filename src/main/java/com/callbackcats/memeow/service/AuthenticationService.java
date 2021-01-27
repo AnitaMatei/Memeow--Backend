@@ -5,7 +5,9 @@ import com.callbackcats.memeow.model.FacebookAuthResponse;
 import com.callbackcats.memeow.model.FacebookUser;
 import com.callbackcats.memeow.model.LoginResponse;
 import com.callbackcats.memeow.model.dto.UserDTO;
+import com.callbackcats.memeow.model.entity.Level;
 import com.callbackcats.memeow.model.entity.User;
+import com.callbackcats.memeow.repository.LevelRepository;
 import com.callbackcats.memeow.repository.UserRepository;
 import com.callbackcats.memeow.security.JwtConstants;
 import com.callbackcats.memeow.security.JwtTokenGenerator;
@@ -27,11 +29,13 @@ import java.util.UUID;
 @Slf4j
 public class AuthenticationService {
     UserRepository userRepository;
+    LevelRepository levelRepository;
     ModelMapper modelMapper;
     JwtTokenGenerator jwtTokenGenerator;
 
-    public AuthenticationService(UserRepository userRepository, ModelMapper modelMapper, JwtTokenGenerator jwtTokenGenerator) {
+    public AuthenticationService(UserRepository userRepository, LevelRepository levelRepository, ModelMapper modelMapper, JwtTokenGenerator jwtTokenGenerator) {
         this.userRepository = userRepository;
+        this.levelRepository = levelRepository;
         this.modelMapper = modelMapper;
         this.jwtTokenGenerator = jwtTokenGenerator;
     }
@@ -87,7 +91,9 @@ public class AuthenticationService {
     }
 
     private String facebookRegisterUser(FacebookUser facebookUser) {
-        User newUser = new User(facebookUser.getEmail(), facebookUser.getFirst_name(), facebookUser.getLast_name(), UUID.randomUUID().toString().replace("-", ""));
+        Level newLevel = new Level();
+        levelRepository.save(newLevel);
+        User newUser = new User(facebookUser.getEmail(), facebookUser.getFirst_name(), facebookUser.getLast_name(), UUID.randomUUID().toString().replace("-", ""), newLevel);
         newUser.setUserRole("ROLE_USER");
         newUser.setHasFacebook((byte) 1);
         newUser.setFacebookRegistrationDateUtc(new Timestamp(new Date().getTime()));
