@@ -52,6 +52,7 @@ public class LeaderboardService {
         pointsPerUser.entrySet().stream().sorted(Map.Entry.comparingByValue())
                 .limit(10).forEach(userPointsEntry -> {
                     placements.get(idx[0]).setUserByUserId(userPointsEntry.getKey());
+                    idx[0]++;
         });
 
         leaderboardRepository.saveAll(placements);
