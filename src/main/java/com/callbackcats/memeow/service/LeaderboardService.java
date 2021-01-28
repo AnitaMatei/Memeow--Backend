@@ -10,6 +10,7 @@ import com.callbackcats.memeow.model.entity.RecentMeme;
 import com.callbackcats.memeow.model.entity.User;
 import com.callbackcats.memeow.repository.LeaderboardRepository;
 import com.callbackcats.memeow.repository.RecentMemeRepository;
+import com.callbackcats.memeow.repository.UserRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.scheduling.annotation.EnableScheduling;
@@ -28,18 +29,20 @@ public class LeaderboardService {
     RecentMemeRepository recentMemeRepository;
     MemeService memeService;
     ModelMapper modelMapper;
+    UserRepository userRepository;
 
-    public LeaderboardService(LeaderboardRepository leaderboardRepository, RecentMemeRepository recentMemeRepository, MemeService memeService, ModelMapper modelMapper) {
+    public LeaderboardService(LeaderboardRepository leaderboardRepository, RecentMemeRepository recentMemeRepository, MemeService memeService, ModelMapper modelMapper, UserRepository userRepository) {
         this.leaderboardRepository = leaderboardRepository;
         this.recentMemeRepository = recentMemeRepository;
         this.memeService = memeService;
         this.modelMapper = modelMapper;
+        this.userRepository = userRepository;
     }
 
     public RankingsResponse getRankings() {
         List<Leaderboard> entries = leaderboardRepository.findAll();
         List<LeaderboardDTO> responseEntries = entries.stream()
-                .limit(1)       //TODO: have enough users
+                .limit(Integer.min(10, (int)userRepository.count()))
                 .map(leaderboard -> {
                     LeaderboardDTO dto = modelMapper.map(leaderboard, LeaderboardDTO.class);
 
@@ -53,7 +56,9 @@ public class LeaderboardService {
 
     public LeaderboardDTO getSpecificRanking(Integer placement) {
         Leaderboard ranking = leaderboardRepository.findByLeaderboardPlace(placement).orElseThrow(RankingNotFoundException::new);
-        return modelMapper.map(ranking,LeaderboardDTO.class);
+        LeaderboardDTO responseEntry = modelMapper.map(ranking,LeaderboardDTO.class);
+        responseEntry.setUserResponse(modelMapper.map(ranking.getUserByUserId(),UserLeaderboardResponse.class));
+        return responseEntry;
     }
 
     @Scheduled(fixedRate = 60000)
@@ -72,8 +77,7 @@ public class LeaderboardService {
         });
 
         Integer[] idx = new Integer[]{0};
-
-        pointsPerUser.entrySet().stream().sorted(Map.Entry.comparingByValue())
+        pointsPerUser.entrySet().stream().sorted(Map.Entry.<User,Integer>comparingByValue().reversed())
                 .limit(10).forEach(userPointsEntry -> {
             placements.get(idx[0]).setUserByUserId(userPointsEntry.getKey());
             idx[0]++;

@@ -2,6 +2,8 @@ package com.callbackcats.memeow.controller;
 
 import com.callbackcats.memeow.exception.ProfileNotFoundException;
 import com.callbackcats.memeow.model.CustomUserPrincipal;
+import com.callbackcats.memeow.model.PrivateProfileResponse;
+import com.callbackcats.memeow.model.PublicProfileResponse;
 import com.callbackcats.memeow.model.dto.UserDTO;
 import com.callbackcats.memeow.service.MemeService;
 import com.callbackcats.memeow.service.UserService;
@@ -25,15 +27,15 @@ public class ProfileController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<UserDTO> getUserProfile(@PathVariable String id) throws ProfileNotFoundException {
-        return ResponseEntity.ok(userService.findProfileByProfileUuid(id));
+    public ResponseEntity<PublicProfileResponse> getUserProfile(@PathVariable String id) throws ProfileNotFoundException {
+        return ResponseEntity.ok(userService.findGenericProfileByProfileUuid(id));
     }
 
     @GetMapping("/own")
-    public ResponseEntity<UserDTO> getOwnProfile() throws ProfileNotFoundException {
+    public ResponseEntity<PrivateProfileResponse> getOwnProfile() throws ProfileNotFoundException {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         CustomUserPrincipal customUserPrincipal = (CustomUserPrincipal) authentication.getPrincipal();
 
-        return ResponseEntity.ok(userService.findProfileByProfileUuid(customUserPrincipal.getUser().getProfileUuid()));
+        return ResponseEntity.ok(userService.findOwnProfile(customUserPrincipal.getUser().getProfileUuid()));
     }
 }
