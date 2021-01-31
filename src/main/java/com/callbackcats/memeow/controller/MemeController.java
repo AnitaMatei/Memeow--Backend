@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.net.URI;
+import java.util.List;
 
 
 @RestController
@@ -43,6 +44,12 @@ public class MemeController {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         CustomUserPrincipal customUserPrincipal = (CustomUserPrincipal) authentication.getPrincipal();
         return ResponseEntity.ok(memeService.likeMeme(id,customUserPrincipal.getUsername()));
+    }
+
+    @GetMapping("/template/{template}")
+    @ResponseBody
+    public ResponseEntity<List<MemeDTO>> getMemesByTemplate(@PathVariable String template, @RequestParam Integer pageNumber, @RequestParam Integer pageSize){
+        return ResponseEntity.ok(memeService.findMemesByTemplate(template,pageNumber,pageSize));
     }
 
 }

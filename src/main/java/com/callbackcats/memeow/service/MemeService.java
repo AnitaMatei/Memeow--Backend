@@ -7,13 +7,18 @@ import com.callbackcats.memeow.model.dto.MemeDTO;
 import com.callbackcats.memeow.model.dto.UserDTO;
 import com.callbackcats.memeow.model.entity.Meme;
 import com.callbackcats.memeow.model.entity.RecentMeme;
+import com.callbackcats.memeow.model.entity.Template;
+import com.callbackcats.memeow.model.entity.User;
 import com.callbackcats.memeow.repository.MemeRepository;
 import com.callbackcats.memeow.repository.RecentMemeRepository;
 import com.callbackcats.memeow.repository.TemplateRepository;
 import com.callbackcats.memeow.repository.UserRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.scheduling.annotation.EnableScheduling;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -27,7 +32,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.sql.Timestamp;
 import java.util.Date;
+import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -86,6 +93,15 @@ public class MemeService {
                 .orElseThrow(() -> new MemeNotFoundException("Meme not found."));
     }
 
+    public List<MemeDTO> findMemesByTemplate(String templateName, Integer pageNumber, Integer pageSize){
+        Pageable page = PageRequest.of(pageNumber, pageSize);
+
+        Template template = templateRepository.findByTemplateName(templateName).orElseThrow(()->new TemplateNotFoundException("Template was not found."));
+
+        return memeRepository.findAllByTemplatesOrderByDateTimeUtcDesc(template, page).stream()
+                .map(meme -> modelMapper.map(meme,MemeDTO.class)).collect(Collectors.toList());
+    }
+
     @Transactional
     public MemeDTO likeMeme(String id, String userEmail){
         Meme meme = memeRepository.findByMemeBusinessId(id).orElseThrow(()->new MemeNotFoundException("Meme does not exist."));
@@ -99,6 +115,16 @@ public class MemeService {
 //    public void resetRecentMemes(){
 //        recentMemeRepository.deleteAll();
 //    }
+
+    public List<MemeDTO> findMemeHistoryOfUser(String id, Integer pageNumber, Integer pageSize) {
+        Pageable page = PageRequest.of(pageNumber, pageSize);
+        User user = userRepository.findByProfileUuid(id).orElseThrow(()->new UsernameNotFoundException("User not found."));
+
+        return memeRepository.findAllByUserOrderByDateTimeUtcDesc(user,page).stream()
+                .map(meme -> modelMapper.map(meme,MemeDTO.class)).collect(Collectors.toList());
+    }
+
+
 
     private void addToRecent(Meme newMeme){
         recentMemeRepository.save(new RecentMeme(newMeme));

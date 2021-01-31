@@ -1,7 +1,9 @@
 package com.callbackcats.memeow.repository;
 
 import com.callbackcats.memeow.model.entity.Meme;
+import com.callbackcats.memeow.model.entity.Template;
 import com.callbackcats.memeow.model.entity.User;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -16,4 +18,6 @@ public interface MemeRepository extends JpaRepository<Meme,Integer> {
     Optional<Meme> findFirstByUserOrderByDateTimeUtcDesc(User user);
     List<Meme> findAllByMemeBusinessIdIn(List<String> uuids);
     List<Meme> findAllByDateTimeUtcAfter(Timestamp lastDay);
+    List<Meme> findAllByTemplatesOrderByDateTimeUtcDesc(Template template, Pageable page);
+    List<Meme> findAllByUserOrderByDateTimeUtcDesc(User user, Pageable pageable);
 }
