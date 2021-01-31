@@ -15,6 +15,7 @@ public class MemeDTO {
     private String memeUrl;
     private Integer reactionCount;
     private Timestamp dateTimeUtc;
+    private Boolean liked;
 
     @Override
     public String toString() {

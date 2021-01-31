@@ -38,7 +38,13 @@ public class MemeController {
     @GetMapping("/{id}")
     @ResponseBody
     public ResponseEntity<MemeDTO> findMeme(@PathVariable String id) {
-        return new ResponseEntity<>(memeService.findMemeByMemeBusinessId(id), HttpStatus.FOUND);
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        CustomUserPrincipal customUserPrincipal = (CustomUserPrincipal) authentication.getPrincipal();
+        String userEmail = null;
+        if (authentication.getPrincipal().getClass() == CustomUserPrincipal.class) {
+            userEmail = ((CustomUserPrincipal) authentication.getPrincipal()).getUsername();
+        }
+        return new ResponseEntity<>(memeService.findMemeByMemeBusinessId(id, userEmail), HttpStatus.FOUND);
     }
 
     @PutMapping("/{id}/like")
@@ -55,8 +61,8 @@ public class MemeController {
 
     @GetMapping("/template/{template}")
     @ResponseBody
-    public ResponseEntity<List<MemeDTO>> getMemesByTemplate(@PathVariable String template, @RequestParam Integer pageNumber, @RequestParam Integer pageSize){
-        return ResponseEntity.ok(memeService.findMemesByTemplate(template,pageNumber,pageSize));
+    public ResponseEntity<List<MemeDTO>> getMemesByTemplate(@PathVariable String template, @RequestParam Integer pageNumber, @RequestParam Integer pageSize) {
+        return ResponseEntity.ok(memeService.findMemesByTemplate(template, pageNumber, pageSize));
     }
 
 }

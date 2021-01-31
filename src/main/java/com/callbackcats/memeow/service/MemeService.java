@@ -56,7 +56,7 @@ public class MemeService {
         this.recentMemeRepository = recentMemeRepository;
     }
 
-    public MemeDTO createAndUploadMeme(MultipartFile file, String templateName, UserDTO user){
+    public MemeDTO createAndUploadMeme(MultipartFile file, String templateName, UserDTO user) {
         ByteArrayOutputStream outputStream;
         try {
             outputStream = convertToJpeg(file.getInputStream());
@@ -71,7 +71,7 @@ public class MemeService {
         return meme;
     }
 
-    public MemeDTO saveMeme(String templateName, UserDTO user){
+    public MemeDTO saveMeme(String templateName, UserDTO user) {
         Meme newMeme = new Meme();
 
         newMeme.setDateTimeUtc(new Timestamp(new Date().getTime()));
@@ -87,28 +87,48 @@ public class MemeService {
         return modelMapper.map(newMeme, MemeDTO.class);
     }
 
-    public MemeDTO findMemeByMemeBusinessId(String id){
-        return memeRepository.findByMemeBusinessId(id)
-                .map(meme -> modelMapper.map(meme, MemeDTO.class))
-                .orElseThrow(() -> new MemeNotFoundException("Meme not found."));
+    public MemeDTO findMemeByMemeBusinessId(String id, String userEmail) {
+        if (userEmail == null)
+            return memeRepository.findByMemeBusinessId(id)
+                    .map(meme -> modelMapper.map(meme, MemeDTO.class))
+                    .orElseThrow(() -> new MemeNotFoundException("Meme not found."));
+        else {
+            User user = userRepository.findByEmail(userEmail).orElseThrow(() -> new UsernameNotFoundException("You are not logged in."));
+
+            Meme meme = memeRepository.findByMemeBusinessId(id).orElseThrow(() -> new MemeNotFoundException("Meme not found."));
+            MemeDTO response = modelMapper.map(meme, MemeDTO.class);
+            ;
+            if (user.getLikedMemes().contains(meme)) {
+                response.setLiked(Boolean.TRUE);
+            }
+            return response;
+        }
     }
 
-    public List<MemeDTO> findMemesByTemplate(String templateName, Integer pageNumber, Integer pageSize){
+    public List<MemeDTO> findMemesByTemplate(String templateName, Integer pageNumber, Integer pageSize) {
         Pageable page = PageRequest.of(pageNumber, pageSize);
 
-        Template template = templateRepository.findByTemplateName(templateName).orElseThrow(()->new TemplateNotFoundException("Template was not found."));
+        Template template = templateRepository.findByTemplateName(templateName).orElseThrow(() -> new TemplateNotFoundException("Template was not found."));
 
         return memeRepository.findAllByTemplatesOrderByDateTimeUtcDesc(template, page).stream()
-                .map(meme -> modelMapper.map(meme,MemeDTO.class)).collect(Collectors.toList());
+                .map(meme -> modelMapper.map(meme, MemeDTO.class)).collect(Collectors.toList());
     }
 
     @Transactional
-    public MemeDTO likeMeme(String id, String userEmail){
-        Meme meme = memeRepository.findByMemeBusinessId(id).orElseThrow(()->new MemeNotFoundException("Meme does not exist."));
+    public MemeDTO likeMeme(String id, String userEmail) {
+        Meme meme = memeRepository.findByMemeBusinessId(id).orElseThrow(() -> new MemeNotFoundException("Meme does not exist."));
+        User user = userRepository.findByEmail(userEmail).orElseThrow(() -> new UsernameNotFoundException("User not found."));
+        MemeDTO response;
+        if (!user.getLikedMemes().contains(meme)) {
+            meme.setReactionCount(meme.getReactionCount() + 1);
+            meme.getLikedBy().add(user);
+            response = modelMapper.map(memeRepository.save(meme), MemeDTO.class);
+        } else {
+            response = modelMapper.map(meme, MemeDTO.class);
+        }
+        response.setLiked(Boolean.TRUE);
 
-        meme.setReactionCount(meme.getReactionCount()+1);
-        meme.getLikedBy().add(userRepository.findByEmail(userEmail).get());
-        return modelMapper.map(memeRepository.save(meme), MemeDTO.class);
+        return response;
     }
 //
 //    @Scheduled(fixedRate = 86400000)
@@ -118,19 +138,18 @@ public class MemeService {
 
     public List<MemeDTO> findMemeHistoryOfUser(String id, Integer pageNumber, Integer pageSize) {
         Pageable page = PageRequest.of(pageNumber, pageSize);
-        User user = userRepository.findByProfileUuid(id).orElseThrow(()->new UsernameNotFoundException("User not found."));
+        User user = userRepository.findByProfileUuid(id).orElseThrow(() -> new UsernameNotFoundException("User not found."));
 
-        return memeRepository.findAllByUserOrderByDateTimeUtcDesc(user,page).stream()
-                .map(meme -> modelMapper.map(meme,MemeDTO.class)).collect(Collectors.toList());
+        return memeRepository.findAllByUserOrderByDateTimeUtcDesc(user, page).stream()
+                .map(meme -> modelMapper.map(meme, MemeDTO.class)).collect(Collectors.toList());
     }
 
 
-
-    private void addToRecent(Meme newMeme){
+    private void addToRecent(Meme newMeme) {
         recentMemeRepository.save(new RecentMeme(newMeme));
     }
 
-    private ByteArrayOutputStream convertToJpeg(InputStream inputStream){
+    private ByteArrayOutputStream convertToJpeg(InputStream inputStream) {
         BufferedImage bufferedImage = null;
         try {
             bufferedImage = ImageIO.read(inputStream);

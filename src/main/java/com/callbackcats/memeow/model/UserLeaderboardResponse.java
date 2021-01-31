@@ -1,7 +1,5 @@
 package com.callbackcats.memeow.model;
 
-import com.callbackcats.memeow.model.dto.LevelDTO;
-import com.callbackcats.memeow.model.dto.MemeDTO;
 import lombok.Data;
 
 @Data
