@@ -3,6 +3,7 @@ package com.callbackcats.memeow.controller;
 import com.callbackcats.memeow.model.CustomUserPrincipal;
 import com.callbackcats.memeow.model.dto.MemeDTO;
 import com.callbackcats.memeow.service.MemeService;
+import com.callbackcats.memeow.service.UserService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -18,9 +19,11 @@ import java.util.List;
 @RequestMapping("api/memes")
 public class MemeController {
     MemeService memeService;
+    UserService userService;
 
-    public MemeController(MemeService memeService) {
+    public MemeController(MemeService memeService, UserService userService) {
         this.memeService = memeService;
+        this.userService = userService;
     }
 
     @PostMapping("/create")
@@ -34,16 +37,20 @@ public class MemeController {
 
     @GetMapping("/{id}")
     @ResponseBody
-    public ResponseEntity<MemeDTO> findMeme(@PathVariable String id){
-        return new ResponseEntity<MemeDTO>(memeService.findMemeByMemeBusinessId(id), HttpStatus.FOUND);
+    public ResponseEntity<MemeDTO> findMeme(@PathVariable String id) {
+        return new ResponseEntity<>(memeService.findMemeByMemeBusinessId(id), HttpStatus.FOUND);
     }
 
     @PutMapping("/{id}/like")
     @ResponseBody
-    public ResponseEntity<MemeDTO> likeMeme(@PathVariable String id){
+    public ResponseEntity<MemeDTO> likeMeme(@PathVariable String id) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         CustomUserPrincipal customUserPrincipal = (CustomUserPrincipal) authentication.getPrincipal();
-        return ResponseEntity.ok(memeService.likeMeme(id,customUserPrincipal.getUsername()));
+
+        MemeDTO meme = memeService.likeMeme(id, customUserPrincipal.getUsername());
+        userService.addExperience(meme, 1);
+
+        return ResponseEntity.ok(meme);
     }
 
     @GetMapping("/template/{template}")
