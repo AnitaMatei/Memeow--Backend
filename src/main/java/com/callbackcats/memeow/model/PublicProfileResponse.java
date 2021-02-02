@@ -12,4 +12,5 @@ public class PublicProfileResponse {
     private String profileUuid;
     private MemeDTO lastMeme;
     private LevelDTO level;
+    private String facebookLink;
 }

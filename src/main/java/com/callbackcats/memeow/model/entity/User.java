@@ -68,6 +68,9 @@ public class User {
     @Basic
     @Column
     private String userRole;
+    @Basic
+    @Column
+    private String facebookLink;
     @OneToMany(mappedBy = "user")
     @EqualsAndHashCode.Exclude
     private Collection<Meme> memes;

@@ -11,6 +11,7 @@ public class UserDTO {
     private String lastName;
     private String iconUrl;
     private String userRole;
+    private String facebookLink;
     private String profileUuid;
     private MemeDTO lastMeme;
     private LevelDTO level;

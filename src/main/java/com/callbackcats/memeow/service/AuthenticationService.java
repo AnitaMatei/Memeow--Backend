@@ -76,7 +76,7 @@ public class AuthenticationService {
                 .bodyToMono(String.class)
                 .block();
 
-
+        System.out.println(jsonData);
         return new Gson().fromJson(jsonData, FacebookUser.class);
     }
 
