@@ -20,4 +20,5 @@ public interface MemeRepository extends JpaRepository<Meme,Integer> {
     List<Meme> findAllByDateTimeUtcAfter(Timestamp lastDay);
     List<Meme> findAllByTemplatesOrderByDateTimeUtcDesc(Template template, Pageable page);
     List<Meme> findAllByUserOrderByDateTimeUtcDesc(User user, Pageable pageable);
+    List<Meme> findAllByOrderByDateTimeUtcDesc(Pageable pageable);
 }

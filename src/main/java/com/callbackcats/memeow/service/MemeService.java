@@ -130,6 +130,13 @@ public class MemeService {
 
         return response;
     }
+
+    public List<MemeDTO> findRecentMemes(Integer pageNumber, Integer pageSize) {
+        Pageable page = PageRequest.of(pageNumber, pageSize);
+
+        return memeRepository.findAllByOrderByDateTimeUtcDesc(page).stream()
+                .map(meme -> modelMapper.map(meme, MemeDTO.class)).collect(Collectors.toList());
+    }
 //
 //    @Scheduled(fixedRate = 86400000)
 //    public void resetRecentMemes(){

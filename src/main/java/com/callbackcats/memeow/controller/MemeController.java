@@ -26,6 +26,11 @@ public class MemeController {
         this.userService = userService;
     }
 
+    @GetMapping("/recent")
+    public ResponseEntity<List<MemeDTO>> getRecentMemes(@RequestParam Integer pageNumber, @RequestParam Integer pageSize){
+        return ResponseEntity.ok(memeService.findRecentMemes(pageNumber,pageSize));
+    }
+
     @PostMapping("/create")
     @ResponseBody
     public ResponseEntity<MemeDTO> createMeme(@RequestParam MultipartFile file, @RequestParam String templateName) {
