@@ -5,6 +5,8 @@ import lombok.*;
 import javax.persistence.*;
 import java.sql.Timestamp;
 import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @Data
@@ -60,19 +62,32 @@ public class User {
     @Column(name = "instagram_registration_date_UTC")
     private Timestamp instagramRegistrationDateUtc;
     @Basic
-    @Column(name = "current_xp")
-    private Long currentXp = 0L;
-    @Basic
-    @Column(name="current_level")
-    private Integer currentLevel = 1;
-    @Basic
     @Column(name = "profile_uuid")
     @NonNull
     private String profileUuid;
     @Basic
     @Column
     private String userRole;
+    @Basic
+    @Column
+    private String facebookLink;
     @OneToMany(mappedBy = "user")
     @EqualsAndHashCode.Exclude
     private Collection<Meme> memes;
+    @OneToOne(mappedBy = "userByUserId")
+    @EqualsAndHashCode.Exclude
+    private Leaderboard leaderboardPlaceByUserId;
+    @OneToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "level_id", referencedColumnName = "level_id")
+    @NonNull
+    private Level level;
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(
+            name = "user_liked_meme",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "meme_id")
+    )
+    @EqualsAndHashCode.Exclude
+    @ToString.Exclude
+    private Set<Meme> likedMemes = new HashSet<>();
 }

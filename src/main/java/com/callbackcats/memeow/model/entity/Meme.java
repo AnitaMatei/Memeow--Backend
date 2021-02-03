@@ -2,6 +2,7 @@ package com.callbackcats.memeow.model.entity;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.ToString;
 
 import javax.persistence.*;
 import java.sql.Timestamp;
@@ -18,6 +19,7 @@ public class Meme {
             inverseJoinColumns = @JoinColumn(name = "template_id")
     )
     @EqualsAndHashCode.Exclude
+    @ToString.Exclude
     Set<Template> templates = new HashSet<>();
     @Id
     @Column(name = "meme_id")
@@ -38,5 +40,19 @@ public class Meme {
     @ManyToOne
     @JoinColumn(name = "user_id", referencedColumnName = "user_id")
     @EqualsAndHashCode.Exclude
+    @ToString.Exclude
     private User user;
+    @OneToOne(mappedBy = "meme", fetch = FetchType.LAZY)
+    @EqualsAndHashCode.Exclude
+    @ToString.Exclude
+    private RecentMeme recentMeme;
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(
+            name = "user_liked_meme",
+            joinColumns = @JoinColumn(name = "meme_id"),
+            inverseJoinColumns = @JoinColumn(name = "user_id")
+    )
+    @EqualsAndHashCode.Exclude
+    @ToString.Exclude
+    private Set<User> likedBy = new HashSet<>();
 }

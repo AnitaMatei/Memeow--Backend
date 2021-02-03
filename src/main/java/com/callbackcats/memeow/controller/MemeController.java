@@ -1,38 +1,73 @@
 package com.callbackcats.memeow.controller;
 
-import com.callbackcats.memeow.exception.BadImageException;
-import com.callbackcats.memeow.exception.MemeNotFoundException;
-import com.callbackcats.memeow.exception.TemplateNotFoundException;
 import com.callbackcats.memeow.model.CustomUserPrincipal;
 import com.callbackcats.memeow.model.dto.MemeDTO;
 import com.callbackcats.memeow.service.MemeService;
+import com.callbackcats.memeow.service.UserService;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.net.URI;
+import java.util.List;
+
+
 @RestController
 @RequestMapping("api/memes")
 public class MemeController {
     MemeService memeService;
+    UserService userService;
 
-    public MemeController(MemeService memeService) {
+    public MemeController(MemeService memeService, UserService userService) {
         this.memeService = memeService;
+        this.userService = userService;
+    }
+
+    @GetMapping("/recent")
+    public ResponseEntity<List<MemeDTO>> getRecentMemes(@RequestParam Integer pageNumber, @RequestParam Integer pageSize){
+        return ResponseEntity.ok(memeService.findRecentMemes(pageNumber,pageSize));
     }
 
     @PostMapping("/create")
     @ResponseBody
-    public MemeDTO createMeme(@RequestParam MultipartFile file, @RequestParam String templateName) throws TemplateNotFoundException, BadImageException {
+    public ResponseEntity<MemeDTO> createMeme(@RequestParam MultipartFile file, @RequestParam String templateName) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        CustomUserPrincipal customUserPrincipal = (CustomUserPrincipal)authentication.getPrincipal();
-
-        return memeService.createAndUploadMeme(file, templateName, customUserPrincipal.getUser());
+        CustomUserPrincipal customUserPrincipal = (CustomUserPrincipal) authentication.getPrincipal();
+        MemeDTO memeDTO = memeService.createAndUploadMeme(file, templateName, customUserPrincipal.getUser());
+        return ResponseEntity.created(URI.create("api/memes/" + memeDTO.getMemeBusinessId())).body(memeDTO);
     }
 
     @GetMapping("/{id}")
     @ResponseBody
-    public MemeDTO findMeme(@PathVariable String id) throws MemeNotFoundException {
-        return memeService.findMemeByMemeBusinessId(id);
+    public ResponseEntity<MemeDTO> findMeme(@PathVariable String id) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        CustomUserPrincipal customUserPrincipal = (CustomUserPrincipal) authentication.getPrincipal();
+        String userEmail = null;
+        if (authentication.getPrincipal().getClass() == CustomUserPrincipal.class) {
+            userEmail = ((CustomUserPrincipal) authentication.getPrincipal()).getUsername();
+        }
+        return new ResponseEntity<>(memeService.findMemeByMemeBusinessId(id, userEmail), HttpStatus.FOUND);
+    }
+
+    @PutMapping("/{id}/like")
+    @ResponseBody
+    public ResponseEntity<MemeDTO> likeMeme(@PathVariable String id) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        CustomUserPrincipal customUserPrincipal = (CustomUserPrincipal) authentication.getPrincipal();
+
+        MemeDTO meme = memeService.likeMeme(id, customUserPrincipal.getUsername());
+        userService.addExperience(meme, 1);
+
+        return ResponseEntity.ok(meme);
+    }
+
+    @GetMapping("/template/{template}")
+    @ResponseBody
+    public ResponseEntity<List<MemeDTO>> getMemesByTemplate(@PathVariable String template, @RequestParam Integer pageNumber, @RequestParam Integer pageSize) {
+        return ResponseEntity.ok(memeService.findMemesByTemplate(template, pageNumber, pageSize));
     }
 
 }

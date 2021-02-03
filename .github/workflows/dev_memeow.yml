@@ -1,0 +1,38 @@
+# Docs for the Azure Web Apps Deploy action: https://github.com/Azure/webapps-deploy
+# More GitHub Actions for Azure: https://github.com/Azure/actions
+
+name: Build and deploy WAR app to Azure Web App - memeow
+
+on:
+  push:
+    branches:
+      - dev
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@master
+
+    - name: Set up Java version
+      uses: actions/setup-java@v1
+      with:
+        java-version: '11'
+
+    - name: Build with Maven
+      run: mvn clean install
+      env:
+        DB_USER: memeowadmin@memeow452
+        DB_PASSWORD: Volichidomircea1234
+        DB_URL: jdbc:mysql://memeow452.mysql.database.azure.com:3306/memeow_db?useSSL=true&requireSSL=false&serverTimezone=UTC
+        AZURE_STORAGE_CONNECTION_STRING: DefaultEndpointsProtocol=https;AccountName=memeowstorage;AccountKey=2XIEXkHKGAW3sa5nVdAgV3uPOY4QA/5o9hy0qtRGrB7Mt1luUEEojazcjVVboMXpouhhDQd/TQcaOIA//+NrMQ==;EndpointSuffix=core.windows.net
+        AZURE_STORAGE_MEME_CONTAINER: usermemes
+
+    - name: Deploy to Azure Web App
+      uses: azure/webapps-deploy@v2
+      with:
+        app-name: 'memeow'
+        slot-name: 'production'
+        publish-profile: ${{ secrets.AzureAppService_PublishProfile_66e48b9dbfbb4458a3d4d1e6c016e085 }}
+        package: '${{ github.workspace }}/target/*.war'

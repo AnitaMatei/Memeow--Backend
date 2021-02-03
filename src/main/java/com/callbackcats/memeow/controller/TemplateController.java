@@ -42,11 +42,11 @@ public class TemplateController {
             templateDTOS = templateService.searchAvailableTemplates(containingStr, 1, 1, page, pageSize);
         } else {
             CustomUserPrincipal customUserPrincipal = (CustomUserPrincipal) authentication.getPrincipal();
-            log.info(customUserPrincipal.getUser().getCurrentLevel().toString());
+            log.info(customUserPrincipal.getUser().getLevel().getCurrentLevel().toString());
             log.info("Requesting page " + page + " of size " + pageSize + " of available templates as " + customUserPrincipal.getUsername() + ".");
             templateDTOS = templateService.searchAvailableTemplates(containingStr,
-                    customUserPrincipal.getUser().getCurrentLevel(),
-                    minLevel.map(level->Integer.min(level,customUserPrincipal.getUser().getCurrentLevel())).orElse(1),
+                    customUserPrincipal.getUser().getLevel().getCurrentLevel(),
+                    minLevel.map(level->Integer.min(level,customUserPrincipal.getUser().getLevel().getCurrentLevel())).orElse(1),
                     page, pageSize);
         }
         return new GsonBuilder().create().toJson(templateDTOS);
@@ -70,7 +70,7 @@ public class TemplateController {
 
             CustomUserPrincipal customUserPrincipal = (CustomUserPrincipal) authentication.getPrincipal();
             log.info("Requesting page " + page + " of size " + pageSize + " of unavailable templates as " + customUserPrincipal.getUsername() + ".");
-            templateDTOS = templateService.searchUnavailableTemplates(containingStr, customUserPrincipal.getUser().getCurrentLevel(), page, pageSize);
+            templateDTOS = templateService.searchUnavailableTemplates(containingStr, customUserPrincipal.getUser().getLevel().getCurrentLevel(), page, pageSize);
         }
         return new GsonBuilder().create().toJson(templateDTOS);
     }
